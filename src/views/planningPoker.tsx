@@ -62,6 +62,10 @@ const Styles = () => (
           display: flex;
         }
 
+        .planning-poker--vote > * {
+          white-space: nowrap;
+        }
+
         .planning-poker--vote .badge {
           font-weight: 500;
           margin-right: 8px;
@@ -206,7 +210,7 @@ const VoteAnalysis = ({ votes }) => {
       </div>
       <div>
         <dt>Average</dt>
-        <dd>{avg}</dd>
+        <dd>{avg.toFixed(1)}</dd>
       </div>
       <div>
         <dt>Lowest</dt>
