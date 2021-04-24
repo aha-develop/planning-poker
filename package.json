@@ -2,10 +2,10 @@
   "name": "trydionel.planning-poker",
   "description": "planning-poker",
   "version": "0.0.0",
-  "author": "trydionel",
+  "author": "Aha! (support@aha.io)",
   "repository": {
     "type": "git",
-    "url": "Add github URL here"
+    "url": "https://github.com/aha-develop/planning-poker"
   },
   "license": "MIT",
   "ahaExtension": {
