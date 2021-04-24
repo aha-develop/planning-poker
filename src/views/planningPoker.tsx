@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import css from '../lib/css'
 
-const EXTENSION_ID = 'trydionel.planning-poker';
+const EXTENSION_ID = 'aha-develop.planning-poker';
 const FIELD_BASE = 'estimate';
 const ESTIMATE_VALUES = [0, 1, 2, 3, 5, 8];
 const PALETTE = {
@@ -220,8 +220,11 @@ const VoteAnalysis = ({ votes }) => {
   )
 }
 
-const PlanningPoker = ({ record, votes }) => {
+const PlanningPoker = ({ record, initialVotes }) => {
+  const [votes, setVotes] = useState(initialVotes);
   const [hasVoted, setHasVoted] = useState<Boolean>(votes.some(v => !!v.currentUser));
+
+  useEffect(() => setVotes(initialVotes), [initialVotes]);
 
   const storeVote = async (estimate) => {
     // @ts-ignore
@@ -235,8 +238,8 @@ const PlanningPoker = ({ record, votes }) => {
     }
     await record.setExtensionField(EXTENSION_ID, key, payload)
 
-    // FIXME: seems like this change doesn't always update the `fields` data at
-    // the top of the component tree
+    payload.currentUser = true;
+    setVotes(votes.filter(v => v.id != user.id).concat([payload]));
     setHasVoted(true)
   }
 
@@ -290,5 +293,5 @@ aha.on("planningPoker", ({ record, fields, container, settings }) => {
     }
   }
 
-  return <PlanningPoker record={record} votes={votes} />
+  return <PlanningPoker record={record} initialVotes={votes} />
 });
