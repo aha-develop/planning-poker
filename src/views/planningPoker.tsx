@@ -224,6 +224,8 @@ const PlanningPoker = ({ record, initialVotes }) => {
   const [votes, setVotes] = useState(initialVotes);
   const [hasVoted, setHasVoted] = useState<Boolean>(votes.some(v => !!v.currentUser));
 
+  // Update state if the intial vote count changes - i.e. another user updates
+  // their vote and our parent's props change.
   useEffect(() => setVotes(initialVotes), [initialVotes]);
 
   const storeVote = async (estimate) => {
