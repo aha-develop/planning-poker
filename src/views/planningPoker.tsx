@@ -1,22 +1,21 @@
 import React, { useState, useEffect } from "react";
+import lodashSortby from 'https://cdn.skypack.dev/lodash.sortby';
 import css from '../lib/css'
 
 const EXTENSION_ID = 'aha-develop.planning-poker';
 const FIELD_BASE = 'estimate';
 const ESTIMATE_VALUES = [0, 1, 2, 3, 5, 8];
 const PALETTE = {
-  0: { color: '#666666', backgroundColor: '#f1f1f1' },
-  1: { color: '#326601', backgroundColor: '#c7dbaf' },
-  2: { color: '#301c42', backgroundColor: '#e5dced' },
-  3: { color: '#7d630b', backgroundColor: '#faebb9' },
-  5: { color: '#c76d00', backgroundColor: '#fcddb8' },
-  8: { color: '#992e0b', backgroundColor: '#fac0af' }
+  '0': { color: '#666666', backgroundColor: '#f1f1f1' },
+  '1': { color: '#326601', backgroundColor: '#c7dbaf' },
+  '2': { color: '#301c42', backgroundColor: '#e5dced' },
+  '3': { color: '#7d630b', backgroundColor: '#faebb9' },
+  '5': { color: '#c76d00', backgroundColor: '#fcddb8' },
+  '8': { color: '#992e0b', backgroundColor: '#fac0af' }
 }
 
 function getEstimateStyle(estimate) {
-  let idx = ESTIMATE_VALUES.indexOf(estimate);
-  if (idx < 0) idx = 0;
-  return PALETTE[idx];
+  return PALETTE[estimate.toString()];
 }
 
 type VoteData = {
@@ -60,6 +59,7 @@ const Styles = () => (
 
         .planning-poker--vote {
           display: flex;
+          margin-bottom: 4px;
         }
 
         .planning-poker--vote > * {
@@ -181,7 +181,7 @@ const VoteForm = ({ onVote }) => (
 const VoteList = ({ votes }) => (
   <div className='planning-poker--results'>
     {
-      votes.sort((a, b) => a.estimate > b.estimate ? 1 : -1).map(vote => {
+      lodashSortby(votes, ['estimate', 'name', 'userId']).map(vote => {
         return (
           <div className='planning-poker--vote' key={vote.id}>
             <div className='badge' style={getEstimateStyle(vote.estimate)}>{vote.estimate}</div>
