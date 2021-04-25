@@ -18,8 +18,7 @@ It provides these contributions:
 
 **Note: In order to install an extension into your Aha! Develop account, you must be an account administrator.**
 
-# TODO: Fill in a link to your built extension package
-Install the Event observer extension by clicking [here](https://secure.aha.io/settings/account/extensions/install?url=).
+Install the planning poker extension by clicking [here](https://secure.aha.io/settings/account/extensions/install?url=https://aha-hosted-files.s3.amazonaws.com/extensions/aha-develop.planning-poker.gz).
 
 ## Working on the extension
 
