@@ -18,7 +18,7 @@ It provides these contributions:
 
 **Note: In order to install an extension into your Aha! Develop account, you must be an account administrator.**
 
-Install the planning poker extension by clicking [here](https://secure.aha.io/settings/account/extensions/install?url=https://aha-hosted-files.s3.amazonaws.com/extensions/aha-develop.planning-poker.gz).
+Install the planning poker extension by clicking [here](https://secure.aha.io/settings/account/extensions/install?url=https%3A%2F%2Fsecure.aha.io%2Fextensions%2Faha-develop.planning-poker.gz).
 
 ## Working on the extension
 
