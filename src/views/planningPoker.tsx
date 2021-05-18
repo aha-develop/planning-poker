@@ -115,7 +115,7 @@ const PlanningPoker = ({ record, initialVotes }) => {
       id: String(user.id),
       name: user.name,
       avatar: user.avatarUrl,
-      estimate
+      estimate: Number(estimate),
     }
     await record.setExtensionField(EXTENSION_ID, extensionFieldKey, payload)
 
