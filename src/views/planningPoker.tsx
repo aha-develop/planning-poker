@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import lodashSortby from 'https://cdn.skypack.dev/lodash.sortby';
-import css from '../lib/css'
+import { PlanningPokerStyles } from './planningPokerStyles';
 
 const EXTENSION_ID = 'aha-develop.planning-poker';
 const FIELD_BASE = 'estimate';
-const ESTIMATE_VALUES = [0, 1, 2, 3, 5, 8];
-const PALETTE = {
+const ESTIMATES = {
   '0': { color: '#666666', backgroundColor: '#f1f1f1' },
   '1': { color: '#326601', backgroundColor: '#c7dbaf' },
   '2': { color: '#301c42', backgroundColor: '#e5dced' },
@@ -13,9 +12,10 @@ const PALETTE = {
   '5': { color: '#c76d00', backgroundColor: '#fcddb8' },
   '8': { color: '#992e0b', backgroundColor: '#fac0af' }
 }
+const ESTIMATE_VALUES = Object.keys(ESTIMATES);
 
 function getEstimateStyle(estimate) {
-  return PALETTE[estimate.toString()];
+  return ESTIMATES[estimate.toString()];
 }
 
 type VoteData = {
@@ -25,132 +25,6 @@ type VoteData = {
   estimate: number;
   currentUser?: boolean;
 }
-
-const Styles = () => (
-  <style>
-    {
-      css`
-        .planning-poker {
-          margin-bottom: -4px;
-          display: flex;
-          flex-direction: row;
-          align-items: stretch;
-          justify-content: space-between;
-        }
-
-        .planning-poker--controls {
-          visibility: hidden;
-          margin-left: 8px;
-        }
-
-        .planning-poker--controls .btn {
-          white-space: nowrap;
-        }
-
-        .planning-poker:hover .planning-poker--controls {
-          visibility: initial;
-        }
-
-        .planning-poker--results {
-          column-count: 2;
-          column-gap: 24px;
-          margin-bottom: 4px;
-        }
-
-        .planning-poker--vote {
-          display: flex;
-          margin-bottom: 4px;
-        }
-
-        .planning-poker--vote > * {
-          white-space: nowrap;
-        }
-
-        .planning-poker--vote .badge {
-          font-weight: 500;
-          margin-right: 8px;
-        }
-
-        .planning-poker--analysis {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          grid-gap: 8px;
-        }
-
-        .planning-poker--analysis > div {
-          background-color: #F1F1F1;
-          padding: 8px;
-          border-radius: 4px;
-          display: flex;
-          flex-direction: column;
-        }
-
-        .planning-poker--analysis dt {
-          font-weight: 400;
-          font-size: 12px;
-          color: #999;
-          order: 2;
-        }
-
-        .planning-poker--analysis dd {
-          font-weight: 700;
-          font-size: 14px;
-          color: #333;
-          margin: 0;
-          order: 1;
-        }
-
-        .poker-card {
-          display: inline-block;
-          overflow: visible;
-          cursor: pointer;
-          margin-right: 6px;
-        }
-
-        .poker-card--frame {
-          fill: white;
-          stroke: #E1E1E1;
-          stroke-width: 1px;
-        }
-
-        .poker-card--fill {
-          fill: #F7F7F7;
-        }
-
-        .poker-card--value {
-          font-size: 14px;
-          font-weight: 600;
-          text-anchor: middle;
-          fill: #333333;
-        }
-
-        .poker-card--corner circle {
-          fill: white;
-        }
-
-        .poker-card--corner text {
-          font-size: 4px;
-          font-weight: 700;
-          text-anchor: middle;
-          fill: #777777;
-        }
-
-        .poker-card:hover .poker-card--frame {
-          stroke: #5CA5E0;
-        }
-        .poker-card:hover .poker-card--fill {
-          fill: #E0EEF9;
-        }
-        .poker-card:hover .poker-card--value {
-          fill: #0073CF;
-        }
-        .poker-card:hover .poker-card--corner text {
-          fill: #5CA5E0;
-        }
-      `
-    }
-  </style>
-)
 
 const PokerCard = ({ width = 29, height = 40, value, onClick }) => (
   <svg className="poker-card" onClick={onClick} width={width} height={height}>
@@ -232,26 +106,32 @@ const PlanningPoker = ({ record, initialVotes }) => {
   // their vote and our parent's props change.
   useEffect(() => setVotes(initialVotes), [initialVotes]);
 
+  // @ts-ignore
+  const user = aha.user;
+  const extensionFieldKey = `${FIELD_BASE}:${user.id}`;
+
   const storeVote = async (estimate) => {
-    // @ts-ignore
-    const user = aha.user;
-    const key = `${FIELD_BASE}:${user.id}`;
     const payload: VoteData = {
       id: String(user.id),
       name: user.name,
       avatar: user.avatarUrl,
       estimate
     }
-    await record.setExtensionField(EXTENSION_ID, key, payload)
+    await record.setExtensionField(EXTENSION_ID, extensionFieldKey, payload)
 
     payload.currentUser = true;
     setVotes(votes.filter(v => v.id != user.id).concat([payload]));
     setHasVoted(true)
   }
 
+  const clearVote = async () => {
+    setHasVoted(false);
+    await record.clearExtensionField(EXTENSION_ID, extensionFieldKey);
+  }
+
   return (
     <>
-      <Styles />
+      <PlanningPokerStyles />
       <div className='planning-poker'>
         {hasVoted ? (
           <>
@@ -260,7 +140,7 @@ const PlanningPoker = ({ record, initialVotes }) => {
               <VoteList votes={votes} />
             </div>
             <div className="planning-poker--controls">
-              <button key='change-vote' className="btn btn-small btn-secondary" onClick={() => setHasVoted(false)}>Change vote</button>
+              <button key='change-vote' className="btn btn-small btn-secondary" onClick={() => clearVote()}>Change vote</button>
             </div>
           </>
         ) : (
@@ -277,6 +157,7 @@ const PlanningPoker = ({ record, initialVotes }) => {
     </>
   )
 }
+
 aha.on("planningPoker", ({ record, fields, container, settings }) => {
   // @ts-ignore
   const currentUserId = aha.user.id;
