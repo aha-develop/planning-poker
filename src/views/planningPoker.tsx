@@ -4,8 +4,7 @@ import { PlanningPokerStyles } from './planningPokerStyles';
 
 const EXTENSION_ID = 'aha-develop.planning-poker';
 const FIELD_BASE = 'estimate';
-const ESTIMATE_VALUES = [0, 1, 2, 3, 5, 8];
-const PALETTE = {
+const ESTIMATES = {
   '0': { color: '#666666', backgroundColor: '#f1f1f1' },
   '1': { color: '#326601', backgroundColor: '#c7dbaf' },
   '2': { color: '#301c42', backgroundColor: '#e5dced' },
@@ -13,9 +12,10 @@ const PALETTE = {
   '5': { color: '#c76d00', backgroundColor: '#fcddb8' },
   '8': { color: '#992e0b', backgroundColor: '#fac0af' }
 }
+const ESTIMATE_VALUES = Object.keys(ESTIMATES);
 
 function getEstimateStyle(estimate) {
-  return PALETTE[estimate.toString()];
+  return ESTIMATES[estimate.toString()];
 }
 
 type VoteData = {
@@ -106,21 +106,27 @@ const PlanningPoker = ({ record, initialVotes }) => {
   // their vote and our parent's props change.
   useEffect(() => setVotes(initialVotes), [initialVotes]);
 
+  // @ts-ignore
+  const user = aha.user;
+  const extensionFieldKey = `${FIELD_BASE}:${user.id}`;
+
   const storeVote = async (estimate) => {
-    // @ts-ignore
-    const user = aha.user;
-    const key = `${FIELD_BASE}:${user.id}`;
     const payload: VoteData = {
       id: String(user.id),
       name: user.name,
       avatar: user.avatarUrl,
       estimate
     }
-    await record.setExtensionField(EXTENSION_ID, key, payload)
+    await record.setExtensionField(EXTENSION_ID, extensionFieldKey, payload)
 
     payload.currentUser = true;
     setVotes(votes.filter(v => v.id != user.id).concat([payload]));
     setHasVoted(true)
+  }
+
+  const clearVote = async () => {
+    setHasVoted(false);
+    await record.clearExtensionField(EXTENSION_ID, extensionFieldKey);
   }
 
   return (
@@ -134,7 +140,7 @@ const PlanningPoker = ({ record, initialVotes }) => {
               <VoteList votes={votes} />
             </div>
             <div className="planning-poker--controls">
-              <button key='change-vote' className="btn btn-small btn-secondary" onClick={() => setHasVoted(false)}>Change vote</button>
+              <button key='change-vote' className="btn btn-small btn-secondary" onClick={() => clearVote()}>Change vote</button>
             </div>
           </>
         ) : (
