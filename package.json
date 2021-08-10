@@ -25,7 +25,6 @@
     }
   },
   "dependencies": {
-    "@aha-app/aha-cli": "^1.8.0",
     "@types/react": "*"
   }
 }
