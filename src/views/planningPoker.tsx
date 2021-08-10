@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from "react";
-import lodashSortby from "https://cdn.skypack.dev/lodash.sortby";
-import { PlanningPokerStyles } from "./planningPokerStyles";
+import React, { useState, useEffect } from 'react';
+import lodashSortby from 'https://cdn.skypack.dev/lodash.sortby';
+import { PlanningPokerStyles } from './planningPokerStyles';
 
-const EXTENSION_ID = "aha-develop.planning-poker";
-const FIELD_BASE = "estimate";
+const EXTENSION_ID = 'aha-develop.planning-poker';
+const FIELD_BASE = 'estimate';
 const ESTIMATES = {
-  "0": { color: "#666666", backgroundColor: "#f1f1f1" },
-  "1": { color: "#326601", backgroundColor: "#c7dbaf" },
-  "2": { color: "#301c42", backgroundColor: "#e5dced" },
-  "3": { color: "#7d630b", backgroundColor: "#faebb9" },
-  "5": { color: "#c76d00", backgroundColor: "#fcddb8" },
-  "8": { color: "#992e0b", backgroundColor: "#fac0af" },
+  '0': { color: '#666666', backgroundColor: '#f1f1f1' },
+  '1': { color: '#326601', backgroundColor: '#c7dbaf' },
+  '2': { color: '#301c42', backgroundColor: '#e5dced' },
+  '3': { color: '#7d630b', backgroundColor: '#faebb9' },
+  '5': { color: '#c76d00', backgroundColor: '#fcddb8' },
+  '8': { color: '#992e0b', backgroundColor: '#fac0af' },
 };
 const ESTIMATE_VALUES = Object.keys(ESTIMATES);
 
@@ -76,7 +76,7 @@ const VoteForm = ({ onVote }) => (
 
 const VoteList = ({ votes }) => (
   <div className="planning-poker--results">
-    {lodashSortby(votes, ["estimate", "name", "userId"]).map((vote) => {
+    {lodashSortby(votes, ['estimate', 'name', 'userId']).map((vote) => {
       return (
         <div className="planning-poker--vote" key={vote.id}>
           <div className="badge" style={getEstimateStyle(vote.estimate)}>
@@ -193,7 +193,7 @@ const PlanningPoker = ({ record, initialVotes }) => {
 };
 
 aha.on(
-  "planningPoker",
+  'planningPoker',
   ({ record, fields }: { record: any; fields: Record<string, VoteData> }) => {
     // Parse the vote data
     const votes = Object.entries(fields)
