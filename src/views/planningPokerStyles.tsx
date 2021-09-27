@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import css from '../lib/css';
 
 export const PlanningPokerStyles = () => (
@@ -53,7 +53,7 @@ export const PlanningPokerStyles = () => (
         }
 
         .planning-poker--analysis > div {
-          background-color: #F1F1F1;
+          background-color: var(--theme-tertiary-background);
           padding: 8px;
           border-radius: 4px;
           display: flex;
@@ -63,14 +63,14 @@ export const PlanningPokerStyles = () => (
         .planning-poker--analysis dt {
           font-weight: 400;
           font-size: 12px;
-          color: #999;
+          color: var(--theme-secondary-text);
           order: 2;
         }
 
         .planning-poker--analysis dd {
           font-weight: 700;
           font-size: 14px;
-          color: #333;
+          color: var(--theme-primary-text);
           margin: 0;
           order: 1;
         }
@@ -83,38 +83,38 @@ export const PlanningPokerStyles = () => (
         }
 
         .poker-card--frame {
-          fill: white;
-          stroke: #E1E1E1;
+          fill: var(--theme-primary-background);
+          stroke: var(--theme-primary-border);
           stroke-width: 1px;
         }
 
         .poker-card--fill {
-          fill: #F7F7F7;
+          fill: var(--theme-secondary-background);
         }
 
         .poker-card--value {
           font-size: 14px;
           font-weight: 600;
           text-anchor: middle;
-          fill: #333333;
+          fill: var(--theme-primary-text);
         }
 
         .poker-card--corner circle {
-          fill: white;
+          fill: var(--theme-primary-background);
         }
 
         .poker-card--corner text {
           font-size: 4px;
           font-weight: 700;
           text-anchor: middle;
-          fill: #777777;
+          fill: var(--theme-secondary-text);
         }
 
         .poker-card:hover .poker-card--frame {
           stroke: #5CA5E0;
         }
         .poker-card:hover .poker-card--fill {
-          fill: #E0EEF9;
+          fill: var(--theme-list-item-active-background);
         }
         .poker-card:hover .poker-card--value {
           fill: #0073CF;
