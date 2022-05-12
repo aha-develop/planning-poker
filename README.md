@@ -25,7 +25,7 @@ Install the planning poker extension by clicking [here](https://secure.aha.io/se
 Install `aha-cli`:
 
 ```sh
- npm install -g @aha-app/aha-cli
+ npm install -g aha-cli
 ```
 
 Clone the repo:
