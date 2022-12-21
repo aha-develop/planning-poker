@@ -5,18 +5,13 @@ import { PlanningPokerStyles } from './planningPokerStyles';
 const EXTENSION_ID = 'aha-develop.planning-poker';
 const FIELD_BASE = 'estimate';
 const ESTIMATES = {
-  '?': { color: '#666666', backgroundColor: '#f1f1f1' },
+  '?': { color: '#f2f2f2', backgroundColor: '#abb2b9' },
+  '0': { color: '#666666', backgroundColor: '#f1f1f1' },
   '1': { color: '#326601', backgroundColor: '#c7dbaf' },
   '2': { color: '#301c42', backgroundColor: '#e5dced' },
   '3': { color: '#7d630b', backgroundColor: '#faebb9' },
   '5': { color: '#c76d00', backgroundColor: '#fcddb8' },
-  '8': { color: '#992e0b', backgroundColor: '#fac0af' },
-  '13': { color: '#992e0b', backgroundColor: '#ea5427' },
-  '21': { color: '#ffffff', backgroundColor: '#dc143c' },
-  '34': { color: '#f5f5f5', backgroundColor: '#990000' },
-  '55': { color: '#eeeeee', backgroundColor: '#68228b' },
-  '89': { color: '#ffffff', backgroundColor: '#151515' },
-
+  '8': { color: '#992e0b', backgroundColor: '#fac0af' }
 };
 const ESTIMATE_VALUES = Object.keys(ESTIMATES);
 
@@ -103,7 +98,6 @@ const VoteList = ({ votes }) => (
 const VoteAnalysis = ({ votes }) => {
 
   const estimates = []
-//  const estimates = votes.map((v) => v.estimate);
   for (let i = 0; i < votes.length; i++) {
     const est = votes[i].estimate;
 
@@ -117,12 +111,10 @@ const VoteAnalysis = ({ votes }) => {
 
     if (estimates.length !== 0) {
     
-    min = Math.min.apply(Math, estimates);
-    max = Math.max.apply(Math, estimates);
-    var sum = 0;
-    estimates.forEach(function(num) { sum += num });
-    avg = sum / estimates.length;
-    avg = avg.toFixed(1)
+      min = Math.min(...estimates);
+      avg = estimates.reduce((n, sum) => n + sum, 0) / estimates.length;
+      max = Math.max(...estimates);
+      avg = avg.toFixed(1)
 
     }
  
