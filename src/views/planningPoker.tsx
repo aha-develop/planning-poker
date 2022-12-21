@@ -11,14 +11,12 @@ const ESTIMATES = {
   '2': { color: '#301c42', backgroundColor: '#e5dced' },
   '3': { color: '#7d630b', backgroundColor: '#faebb9' },
   '5': { color: '#c76d00', backgroundColor: '#fcddb8' },
-  '8': { color: '#992e0b', backgroundColor: '#fac0af' }
+  '8': { color: '#992e0b', backgroundColor: '#fac0af' },
 };
 const ESTIMATE_VALUES = Object.keys(ESTIMATES);
 
 function getEstimateStyle(estimate) {
-
-    return ESTIMATES[estimate];
-
+  return ESTIMATES[estimate];
 }
 
 interface VoteData {
@@ -96,29 +94,26 @@ const VoteList = ({ votes }) => (
 );
 
 const VoteAnalysis = ({ votes }) => {
-
-  const estimates = []
+  const estimates = [];
   for (let i = 0; i < votes.length; i++) {
     const est = votes[i].estimate;
 
     if (!isNaN(Number(est))) {
       estimates.push(Number(est));
     }
-  }   
-    var min = "?"
-    var avg = "?"
-    var max = "?"
+  }
+  var min = '?';
+  var avg = '?';
+  var max = '?';
 
-    if (estimates.length !== 0) {
-    
-      min = Math.min(...estimates);
-      avg = estimates.reduce((n, sum) => n + sum, 0) / estimates.length;
-      max = Math.max(...estimates);
-      avg = avg.toFixed(1)
+  if (estimates.length !== 0) {
+    min = Math.min(...estimates);
+    avg = estimates.reduce((n, sum) => n + sum, 0) / estimates.length;
+    max = Math.max(...estimates);
+    avg = avg.toFixed(1);
+  }
 
-    }
- 
-    return (
+  return (
     <dl className="planning-poker--analysis">
       <div>
         <dt>Votes</dt>
