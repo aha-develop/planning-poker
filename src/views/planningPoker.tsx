@@ -5,24 +5,27 @@ import { PlanningPokerStyles } from './planningPokerStyles';
 const EXTENSION_ID = 'aha-develop.planning-poker';
 const FIELD_BASE = 'estimate';
 const ESTIMATES = {
+  '?': { color: '#f2f2f2', backgroundColor: '#abb2b9' },
   '0': { color: '#666666', backgroundColor: '#f1f1f1' },
   '1': { color: '#326601', backgroundColor: '#c7dbaf' },
   '2': { color: '#301c42', backgroundColor: '#e5dced' },
   '3': { color: '#7d630b', backgroundColor: '#faebb9' },
   '5': { color: '#c76d00', backgroundColor: '#fcddb8' },
-  '8': { color: '#992e0b', backgroundColor: '#fac0af' },
+  '8': { color: '#992e0b', backgroundColor: '#fac0af' }
 };
 const ESTIMATE_VALUES = Object.keys(ESTIMATES);
 
 function getEstimateStyle(estimate) {
-  return ESTIMATES[estimate.toString()];
+
+    return ESTIMATES[estimate];
+
 }
 
 interface VoteData {
   id: string;
   name: string;
   avatar: string;
-  estimate: number;
+  estimate: string;
 }
 
 const PokerCard = ({ width = 29, height = 40, value, onClick }) => (
@@ -93,12 +96,29 @@ const VoteList = ({ votes }) => (
 );
 
 const VoteAnalysis = ({ votes }) => {
-  const estimates = votes.map((v) => v.estimate);
-  const min = Math.min(...estimates);
-  const avg = estimates.reduce((n, sum) => n + sum, 0) / estimates.length;
-  const max = Math.max(...estimates);
 
-  return (
+  const estimates = []
+  for (let i = 0; i < votes.length; i++) {
+    const est = votes[i].estimate;
+
+    if (!isNaN(Number(est))) {
+      estimates.push(Number(est));
+    }
+  }   
+    var min = "?"
+    var avg = "?"
+    var max = "?"
+
+    if (estimates.length !== 0) {
+    
+      min = Math.min(...estimates);
+      avg = estimates.reduce((n, sum) => n + sum, 0) / estimates.length;
+      max = Math.max(...estimates);
+      avg = avg.toFixed(1)
+
+    }
+ 
+    return (
     <dl className="planning-poker--analysis">
       <div>
         <dt>Votes</dt>
@@ -106,7 +126,7 @@ const VoteAnalysis = ({ votes }) => {
       </div>
       <div>
         <dt>Average</dt>
-        <dd>{avg.toFixed(1)}</dd>
+        <dd>{avg}</dd>
       </div>
       <div>
         <dt>Lowest</dt>
@@ -138,7 +158,7 @@ const PlanningPoker = ({ record, initialVotes }) => {
       id: String(user.id),
       name: user.name,
       avatar: user.avatarUrl,
-      estimate: Number(estimate),
+      estimate: String(estimate),
     };
     await record.setExtensionField(EXTENSION_ID, extensionFieldKey, payload);
 
