@@ -4,26 +4,19 @@ import { PlanningPokerStyles } from './planningPokerStyles';
 
 const EXTENSION_ID = 'aha-develop.planning-poker';
 const FIELD_BASE = 'estimate';
-const ESTIMATES = {
-  '?': { color: '#f2f2f2', backgroundColor: '#abb2b9' },
-  '0': { color: '#666666', backgroundColor: '#f1f1f1' },
-  '1': { color: '#326601', backgroundColor: '#c7dbaf' },
-  '2': { color: '#301c42', backgroundColor: '#e5dced' },
-  '3': { color: '#7d630b', backgroundColor: '#faebb9' },
-  '5': { color: '#c76d00', backgroundColor: '#fcddb8' },
-  '8': { color: '#992e0b', backgroundColor: '#fac0af' },
-};
-const ESTIMATE_VALUES = Object.keys(ESTIMATES);
-
-function getEstimateStyle(estimate) {
-  return ESTIMATES[estimate];
-}
+const PALETTE = ['#8dd3c7','#ffffb3','#bebada','#fb8072','#80b1d3','#fdb462','#b3de69','#fccde5','#d9d9d9','#bc80bd','#ccebc5','#ffed6f']
 
 interface VoteData {
   id: string;
   name: string;
   avatar: string;
-  estimate: string;
+  estimate: number | null;
+  unknown?: boolean;
+}
+
+interface Options {
+  values: number[]
+  includeUnknown: boolean
 }
 
 const PokerCard = ({ width = 29, height = 40, value, onClick }) => (
@@ -61,9 +54,9 @@ const PokerCard = ({ width = 29, height = 40, value, onClick }) => (
   </svg>
 );
 
-const VoteForm = ({ onVote }) => (
+const VoteForm = ({ options, onVote }) => (
   <div className="planning-poker--form">
-    {ESTIMATE_VALUES.map((estimate) => {
+    {options.values.map((estimate) => {
       return (
         <PokerCard
           key={estimate}
@@ -72,46 +65,53 @@ const VoteForm = ({ onVote }) => (
         />
       );
     })}
+
+    { options.includeUnknown ? 
+      <PokerCard
+        key="unknown"
+        value="?"
+        onClick={() => onVote(null)}
+      />
+    : '' }
   </div>
 );
 
-const VoteList = ({ votes }) => (
-  <div className="planning-poker--results">
-    {lodashSortby(votes, ['estimate', 'name', 'userId']).map((vote) => {
-      return (
-        <div className="planning-poker--vote" key={vote.id}>
-          <div className="badge" style={getEstimateStyle(vote.estimate)}>
-            {vote.estimate}
-          </div>
-          <div>
-            {vote.avatar && <img alt={vote.name} src={vote.avatar} />}
-            {vote.name}
-          </div>
-        </div>
-      );
-    })}
-  </div>
-);
+const VoteList = ({ options, votes }) => {
+  const getEstimateStyle = (value) => {
+    const index = Math.max(0, options.values.indexOf(value))
+    const baseColor = PALETTE[index]
 
-const VoteAnalysis = ({ votes }) => {
-  const estimates = [];
-  for (let i = 0; i < votes.length; i++) {
-    const est = votes[i].estimate;
-
-    if (!isNaN(Number(est))) {
-      estimates.push(Number(est));
+    return {
+      color: 'rgba(0, 0, 0, 0.87)',
+      backgroundColor: baseColor
     }
   }
-  var min = '?';
-  var avg = '?';
-  var max = '?';
 
-  if (estimates.length !== 0) {
-    min = Math.min(...estimates);
-    avg = estimates.reduce((n, sum) => n + sum, 0) / estimates.length;
-    max = Math.max(...estimates);
-    avg = avg.toFixed(1);
-  }
+  return (
+    <div className="planning-poker--results">
+      {lodashSortby(votes, ['estimate', 'name', 'userId']).map((vote) => {
+        return (
+          <div className="planning-poker--vote" key={vote.id}>
+            <div className="badge" style={getEstimateStyle(vote.estimate)}>
+              {vote.unknown ? "?" : vote.estimate}
+            </div>
+            <div>
+              {vote.avatar && <img alt={vote.name} src={vote.avatar} />}
+              {vote.name}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  )
+};
+
+const VoteAnalysis = ({ votes }) => {
+  const estimates = votes.filter(v => !v.unknown).map(v => parseInt(v.estimate, 10)); // Exclude "unknown" votes
+  const total = estimates.length // Total excluding unknown
+  const min = Math.min(...estimates);
+  const avg = estimates.reduce((n, sum) => n + sum, 0) / estimates.length;
+  const max = Math.max(...estimates);
 
   return (
     <dl className="planning-poker--analysis">
@@ -121,21 +121,21 @@ const VoteAnalysis = ({ votes }) => {
       </div>
       <div>
         <dt>Average</dt>
-        <dd>{avg}</dd>
+        <dd>{total > 0 ? avg.toFixed(1) : "-"}</dd>
       </div>
       <div>
         <dt>Lowest</dt>
-        <dd>{min}</dd>
+        <dd>{total > 0 ? min : "-"}</dd>
       </div>
       <div>
         <dt>Highest</dt>
-        <dd>{max}</dd>
+        <dd>{total > 0 ? max : "-"}</dd>
       </div>
     </dl>
   );
 };
 
-const PlanningPoker = ({ record, initialVotes }) => {
+const PlanningPoker = ({ record, options, initialVotes }) => {
   const [votes, setVotes] = useState<VoteData[]>(initialVotes);
   const [hasVoted, setHasVoted] = useState<Boolean>(
     votes.some((v) => v.id === aha.user.id)
@@ -153,8 +153,15 @@ const PlanningPoker = ({ record, initialVotes }) => {
       id: String(user.id),
       name: user.name,
       avatar: user.avatarUrl,
-      estimate: String(estimate),
+      estimate: null
     };
+
+    if (estimate === null) {
+      payload.unknown = true
+    } else {
+      payload.estimate = estimate
+    }
+
     await record.setExtensionField(EXTENSION_ID, extensionFieldKey, payload);
 
     setVotes(votes.filter((v) => v.id != user.id).concat([payload]));
@@ -174,7 +181,7 @@ const PlanningPoker = ({ record, initialVotes }) => {
           <>
             <div className="planning-poker--input">
               <VoteAnalysis votes={votes} />
-              <VoteList votes={votes} />
+              <VoteList options={options} votes={votes} />
             </div>
             <div className="planning-poker--controls">
               <button
@@ -189,7 +196,7 @@ const PlanningPoker = ({ record, initialVotes }) => {
         ) : (
           <>
             <div className="planning-poker--input">
-              <VoteForm onVote={storeVote} />
+              <VoteForm options={options} onVote={storeVote} />
             </div>
             <div className="planning-poker--controls">
               <button
@@ -209,7 +216,7 @@ const PlanningPoker = ({ record, initialVotes }) => {
 
 aha.on(
   'planningPoker',
-  ({ record, fields }: { record: any; fields: Record<string, VoteData> }) => {
+  ({ record, fields }: { record: any; fields: Record<string, VoteData> }, { settings }) => {
     // Parse the vote data
     const votes = Object.entries(fields)
       .filter(
@@ -217,7 +224,11 @@ aha.on(
           key.includes(FIELD_BASE) && vote.hasOwnProperty(FIELD_BASE)
       )
       .map(([_, vote]) => vote);
+    const options: Options = {
+      includeUnknown: settings.includeUnknown as boolean,
+      values: (settings.options as string[]).map(o => parseInt(o, 10)) // Ensure options come through as numeric values
+    }
 
-    return <PlanningPoker record={record} initialVotes={votes} />;
+    return <PlanningPoker record={record} options={options} initialVotes={votes} />;
   }
 );

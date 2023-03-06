@@ -11,6 +11,21 @@
   "ahaExtension": {
     "cspSources": [],
     "contributes": {
+      "settings": {
+        "options": {
+          "title": "Estimate options",
+          "type": "number",
+          "scope": ["account"],
+          "array": true,
+          "default": [0, 1, 2, 3, 5, 8]
+        },
+        "includeUnknown": {
+          "title": "Include unknown option",
+          "type": "boolean",
+          "scope": ["account"],
+          "default": false
+        }
+      },
       "views": {
         "planningPoker": {
           "title": "Planning poker",
