@@ -199,6 +199,7 @@ const PlanningPoker = ({ record, initialVotes }) => {
               >
                 See results
               </button>
+              <p className="votes">{votes.length} Votes</p>
             </div>
           </>
         )}
