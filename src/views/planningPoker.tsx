@@ -197,9 +197,8 @@ const PlanningPoker = ({ record, initialVotes }) => {
                 className="btn btn-small btn-secondary"
                 onClick={() => setHasVoted(true)}
               >
-                See results
+                See {votes.length} votes
               </button>
-              <p className="votes">{votes.length} Votes</p>
             </div>
           </>
         )}

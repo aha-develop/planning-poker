@@ -21,12 +21,6 @@ export const PlanningPokerStyles = () => (
         white-space: nowrap;
       }
 
-      .planning-poker--controls .votes {
-        text-align: right;
-        margin: 0;
-        font-size: 12px;
-    }
-
       .planning-poker:hover .planning-poker--controls {
         visibility: initial;
       }
