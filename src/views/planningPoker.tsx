@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import lodashSortby from 'https://cdn.skypack.dev/lodash.sortby';
+import { sortBy } from 'lodash';
 import { PlanningPokerStyles } from './planningPokerStyles';
 
 const EXTENSION_ID = 'aha-develop.planning-poker';
@@ -66,7 +66,7 @@ const VoteForm = ({ options, onVote }) => (
       );
     })}
 
-    { options.includeUnknown ? 
+    { options.includeUnknown ?
       <PokerCard
         key="unknown"
         value="?"
@@ -89,7 +89,7 @@ const VoteList = ({ options, votes }) => {
 
   return (
     <div className="planning-poker--results">
-      {lodashSortby(votes, ['estimate', 'name', 'userId']).map((vote) => {
+      {sortBy(votes, ['estimate', 'name', 'userId']).map((vote) => {
         return (
           <div className="planning-poker--vote" key={vote.id}>
             <div className="badge" style={getEstimateStyle(vote.estimate)}>
